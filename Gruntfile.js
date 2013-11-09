@@ -1,66 +1,19 @@
+var flour = require('flour')
+
 module.exports = function(grunt) {
-  var config = {};
-  var tasks = [
-      "grunt-contrib-concat"
-    , "grunt-contrib-uglify"
-    , "grunt-contrib-copy"
-    , "grunt-contrib-jshint"
-  ];
 
-  //==========================================================
+    grunt.registerTask('lint', function () {
+        flour.linters.js.options = { laxcomma: true }
+        lint('lib/**/*.js', this.async());
+    });
 
-  config.jshint = {};
+    grunt.registerTask('build', function () {
+        bundle([
+            'lib/cpf.js'
+          , 'lib/cnpj.js'
+        ], 'build/cpf_cnpj.js', this.async());
+    });
 
-  config.jshint.dist = {
-      options: {jshintrc: true}
+    grunt.registerTask('default', ['lint', 'build']);
 
-    , files: {
-        src: ["lib/**/*.js"]
-      }
-  };
-
-  //==========================================================
-
-  config.copy = {};
-
-  config.copy.all = {
-    files: [
-        {src: "lib/cnpj.js", dest: "build/cnpj.js"}
-      , {src: "lib/cpf.js", dest: "build/cpf.js"}
-    ]
-  };
-
-  //==========================================================
-
-  config.concat = {};
-
-  config.concat.bundle = {
-      src: ["lib/cpf.js", "lib/cnpj.js"]
-    , dest: "build/cpf_cnpj.js"
-  };
-
-  //==========================================================
-
-  config.uglify = {};
-
-  config.uglify.cnpj = {
-      src: "build/cnpj.js"
-    , dest: "build/cnpj.min.js"
-  };
-
-  config.uglify.cpf = {
-      src: "build/cpf.js"
-    , dest: "build/cpf.min.js"
-  };
-
-  config.uglify.cpf_cnpj = {
-      src: "build/cpf_cnpj.js"
-    , dest: "build/cpf_cnpj.min.js"
-  };
-
-  //==========================================================
-
-  grunt.initConfig(config);
-  tasks.forEach(grunt.loadNpmTasks);
-  grunt.registerTask("default", ["jshint", "concat", "copy", "uglify"]);
 };
